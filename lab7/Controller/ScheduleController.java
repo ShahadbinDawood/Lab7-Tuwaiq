@@ -24,7 +24,7 @@ public class ScheduleController {
     @PostMapping("/add")
     public ResponseEntity<?> addSchedule(@RequestBody @Valid Schedule schedule) {
         scheduleService.addSchedule(schedule);
-        return ResponseEntity.status(201).body("Schedule Added Successfully");
+        return ResponseEntity.status(200).body(new ApiResponds("Schedule Added Successfully"));
     }
 
 
@@ -32,9 +32,9 @@ public class ScheduleController {
     public ResponseEntity<?> updateSchedule(@PathVariable String day, @RequestBody @Valid Schedule schedule) {
         boolean isUpdated = scheduleService.updateSchedule(day, schedule);
         if (isUpdated) {
-            return ResponseEntity.status(200).body("Schedule Updated Successfully");
+            return ResponseEntity.status(200).body(new ApiResponds("Schedule Updated Successfully"));
         }
-        return ResponseEntity.status(404).body("Schedule Not Found for this Day");
+        return ResponseEntity.status(404).body(new ApiResponds("Schedule Not Found for this Day"));
     }
 
 
@@ -42,22 +42,27 @@ public class ScheduleController {
     public ResponseEntity<?> deleteSchedule(@PathVariable String day) {
         boolean isDeleted = scheduleService.deleteSchedule(day);
         if (isDeleted) {
-            return ResponseEntity.status(200).body("Schedule Deleted Successfully");
+            return ResponseEntity.status(200).body(new ApiResponds("Schedule Deleted Successfully"));
         }
-        return ResponseEntity.status(404).body("Schedule Not Found");
+        return ResponseEntity.status(404).body(new ApiResponds("Schedule Not Found"));
     }
 
 
     @GetMapping("/search-day/{day}")
     public ResponseEntity<?> searchByDay(@PathVariable String day) {
-
-        return ResponseEntity.status(200).body(scheduleService.searchByDay(day));
-    }
+        ArrayList<Schedule> schedule = scheduleService.searchByDay(day);
+        if (schedule == null) {
+            return ResponseEntity.status(404).body(new ApiResponds("No schedule found for this day"));
+        }
+        return ResponseEntity.status(200).body(schedule);}
 
 
     @GetMapping("/search-time/{startTime}")
     public ResponseEntity<?> searchByTime(@PathVariable String startTime) {
         ArrayList<Schedule> result = scheduleService.searchByTime(startTime);
+        if (result.isEmpty()) {
+            return ResponseEntity.status(404).body(new ApiResponds("No schedules found for this start time"));
+        }
         return ResponseEntity.status(200).body(result);
     }
 
