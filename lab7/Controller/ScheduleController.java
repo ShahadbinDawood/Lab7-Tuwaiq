@@ -1,5 +1,6 @@
 package com.example.lab7.Controller;
 
+import com.example.lab7.Api.ApiResponds;
 import com.example.lab7.Model.Schedule;
 import com.example.lab7.Service.ScheduleService;
 import jakarta.validation.Valid;
@@ -64,6 +65,9 @@ public class ScheduleController {
     @GetMapping("/search-class/{classId}")
     public ResponseEntity<?> searchByClassID(@PathVariable String classId) {
         ArrayList<Schedule> result = scheduleService.searchByClassID(classId);
+        if(result.isEmpty()){
+            return ResponseEntity.status(400).body(new ApiResponds("no schedule with this class are found"));
+        }
         return ResponseEntity.status(200).body(result);
     }
 
